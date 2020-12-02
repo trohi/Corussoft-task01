@@ -6,8 +6,10 @@ const Nav = styled.div`
   font-size: 1rem;
   background-color: black;
   width: 100%;
-  height: 80px;
-  padding-top: 5%
+  height: 60px;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  border-bottom: 1px solid green;
 `
 const ButtonGrayscale = styled.button`
   width: 10%;
@@ -25,6 +27,7 @@ const ButtonGrayscale = styled.button`
     width: 11%
   }
 `
+
 
 const ButtonBlur = styled(ButtonGrayscale)`
   margin-left: 5%
