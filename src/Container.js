@@ -15,7 +15,7 @@ const Img = styled.img`
     border-left: 2px solid teal;
     border-right: 2px solid green;
     padding-left: 25px;
-    padding-right: 25px
+    padding-right: 25px;
 `
 
 const Nav = styled.div`
@@ -37,6 +37,7 @@ const ButtonGrayscale = styled.button`
     border-radius: 20px;
     color: grey;
     line-height: 35px;
+    font-family: Avenir;
     cursor: pointer;
 
     &:hover{
@@ -50,11 +51,11 @@ const ButtonGrayscaleActive = styled(ButtonGrayscale)`
 `
 
 const ButtonNormal = styled(ButtonGrayscale)`
-    margin-left: 5%
+    margin-left: 5%;
 `
 const ButtonNormalActive = styled(ButtonNormal)`
     background-color: green;
-    color: black
+    color: black;
 `
 
 const BlurHeader = styled.span`
@@ -123,7 +124,8 @@ class Container extends React.Component{
         }
     }
 
-    normalHandler = () => {
+    normalHandler = (e) => {
+        e.preventDefault()
         this.setState({normal: true})
         this.setState({grayscale: false})
         this.setState({imgArray:[]})
@@ -135,6 +137,7 @@ class Container extends React.Component{
     }
 
     blurEffectHandler = (e) => {
+        e.preventDefault()
         console.log(e.target.value)
         const targetValue = e.target.value
         this.setState({blurValue: targetValue})
@@ -167,7 +170,7 @@ class Container extends React.Component{
             <div>
                 <Nav>
                 {
-                    this.state.grayscale ? <ButtonGrayscaleActive onClick={this.grayscaleHandler}>greyscale</ButtonGrayscaleActive> : <ButtonGrayscale onClick={this.grayscaleHandler}>greyscale</ButtonGrayscale>
+                    this.state.grayscale ? <ButtonGrayscaleActive onClick={this.grayscaleHandler}>grayscale</ButtonGrayscaleActive> : <ButtonGrayscale onClick={this.grayscaleHandler}>grayscale</ButtonGrayscale>
                 }
                 {
                     this.state.normal ? <ButtonNormalActive onClick={this.normalHandler}>normal</ButtonNormalActive> : <ButtonNormal onClick={this.normalHandler}>normal</ButtonNormal>
