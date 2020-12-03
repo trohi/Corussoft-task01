@@ -53,6 +53,24 @@ const BlurHeader = styled.span`
   margin-right: 1%
 `
 
+const Select = styled.select`
+  background-color: green;
+  color: white;
+  border: 8px solid green;
+  border-radius: 50px;
+  font-size:16px;
+
+    option{
+         color: black;
+         background: white;
+         font-weight: small;
+         display: flex;
+         white-space: pre;
+         min-height: 20px;
+         padding: 0px 2px 1px;
+    }
+`
+
 class Container extends React.Component{
     constructor(){
         super()
@@ -108,13 +126,29 @@ class Container extends React.Component{
         }
     }
 
+    blurEffectHandler = (e) => {
+        console.log(e.target.value)
+        const blurValue = e.target.value
+        if(blurValue === "0"){
+            this.normalHandler()
+        } else {
+            this.setState({apiUrl:`https://picsum.photos/400/400?blur=${blurValue}`})
+            this.setState({imgArray:[]})
+            for(let i =0; i < this.state.imgArray.length; i++){
+                fetch(`https://picsum.photos/400/400?blur=${blurValue}`)
+                .then((response)=>{
+                    this.setState({imgArray: [...this.state.imgArray, response.url]})
+                })
+            }
+        }
+    }
+
 
     componentDidMount(){
         for(let i = 0; i< 15; i++ ){
         const ApiUrl = this.state.apiUrl
         fetch(ApiUrl)
         .then((response) => {
-            //console.log(response.url)
             this.setState({imgUrl: response.url})
             this.setState({imgArray:[...this.state.imgArray, response.url] })
             //console.log(this.state.imgArray[0])
@@ -130,19 +164,19 @@ class Container extends React.Component{
                 <ButtonGrayscale onClick={this.grayscaleHandler}>grayscale</ButtonGrayscale >
                 <ButtonNormal onClick={this.normalHandler}>normal</ButtonNormal>
                 <BlurHeader>Select blur strength :</BlurHeader>
-                <select>
-                    <option value="0" disabled selected>0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                </select>
+                <Select>
+                    <option value="0" selected onClick={this.blurEffectHandler}>0</option>
+                    <option value="1" onClick={this.blurEffectHandler}>1</option>
+                    <option value="2" onClick={this.blurEffectHandler}>2</option>
+                    <option value="3" onClick={this.blurEffectHandler}>3</option>
+                    <option value="4" onClick={this.blurEffectHandler}>4</option>
+                    <option value="5" onClick={this.blurEffectHandler}>5</option>
+                    <option value="6" onClick={this.blurEffectHandler}>6</option>
+                    <option value="7" onClick={this.blurEffectHandler}>7</option>
+                    <option value="8" onClick={this.blurEffectHandler}>8</option>
+                    <option value="9" onClick={this.blurEffectHandler}>9</option>
+                    <option value="10" onClick={this.blurEffectHandler}>10</option>
+                </Select>
                 </Nav>
                 <ContainerDiv>
                     {
