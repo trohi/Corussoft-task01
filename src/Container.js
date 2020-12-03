@@ -8,7 +8,7 @@ const ContainerDiv = styled.div`
 
 const Img = styled.img`
     display: flex;
-    margin-top: 40px;
+    margin-top: 120px;
     margin-bottom: 10px;
     margin-left: auto;
     margin-right: auto;
@@ -19,6 +19,7 @@ const Img = styled.img`
 `
 
 const Nav = styled.div`
+  position: fixed;
   font-size: 1rem;
   background-color: black;
   width: 100%;
@@ -43,32 +44,30 @@ const ButtonGrayscale = styled.button`
     width: 11%
   }
 `
+const ButtonGrayscaleActive = styled(ButtonGrayscale)`
+  background-color: green;
+  color: black
+`
 
 const ButtonNormal = styled(ButtonGrayscale)`
   margin-left: 5%
 `
+const ButtonNormalActive = styled(ButtonNormal)`
+  background-color: green;
+  color: black
+`
+
 const BlurHeader = styled.span`
   color: green;
   margin-left: 5%;
   margin-right: 1%
 `
 
-const Select = styled.select`
-  background-color: green;
-  color: white;
-  border: 8px solid green;
-  border-radius: 50px;
-  font-size:16px;
-
-    option{
-         color: black;
-         background: white;
-         font-weight: small;
-         display: flex;
-         white-space: pre;
-         min-height: 20px;
-         padding: 0px 2px 1px;
-    }
+const Slider = styled.input`
+    background:green;
+    color:green;
+    height:6px;
+    cursor:pointer
 `
 
 class Container extends React.Component{
@@ -80,7 +79,8 @@ class Container extends React.Component{
             apiUrl:`https://picsum.photos/400/400${grayscale}`,
             imgArray:[], 
             scrollEventCounter: 0,
-            loading:false
+            grayscale: false,
+            normal:true
             }
 
             window.onscroll = function(){scrollHandler()}
@@ -104,8 +104,20 @@ class Container extends React.Component{
         }     
     }
 
+    helperFunction = (api) => {
+        this.setState({apiUrl:api})
+        for(let i =0; i < this.state.imgArray.length; i++){
+                fetch(api)
+                .then((response)=>{
+                    this.setState({imgArray: [...this.state.imgArray, response.url]})
+                })
+            }
+    }
+
     grayscaleHandler = () => {
         this.setState({apiUrl:"https://picsum.photos/400/400?grayscale"})
+        this.setState({grayscale: !this.state.grayscale})
+        this.setState({normal: false})
         this.setState({imgArray:[]})
         for(let i = 0; i < this.state.imgArray.length; i++){
             fetch(`https://picsum.photos/400/400?grayscale`)
@@ -117,6 +129,8 @@ class Container extends React.Component{
 
     normalHandler = () => {
         this.setState({apiUrl:"https://picsum.photos/400/400"})
+        this.setState({normal: true})
+        this.setState({grayscale: false})
         this.setState({imgArray:[]})
         for(let i = 0; i < this.state.imgArray.length; i++){
             fetch(`https://picsum.photos/400/400`)
@@ -131,6 +145,15 @@ class Container extends React.Component{
         const blurValue = e.target.value
         if(blurValue === "0"){
             this.normalHandler()
+        } else if(this.state.grayscale){
+            this.setState({apiUrl:`https://picsum.photos/400/400?grayscale&blur=${blurValue}`})
+            this.setState({imgArray:[]})
+            for(let i =0; i < this.state.imgArray.length; i++){
+                fetch(`https://picsum.photos/400/400?grayscale&blur=${blurValue}`)
+                .then((response)=>{
+                    this.setState({imgArray: [...this.state.imgArray, response.url]})
+                })
+            }
         } else {
             this.setState({apiUrl:`https://picsum.photos/400/400?blur=${blurValue}`})
             this.setState({imgArray:[]})
@@ -139,9 +162,9 @@ class Container extends React.Component{
                 .then((response)=>{
                     this.setState({imgArray: [...this.state.imgArray, response.url]})
                 })
-            }
         }
     }
+}
 
 
     componentDidMount(){
@@ -161,22 +184,14 @@ class Container extends React.Component{
         return(
             <div>
                 <Nav>
-                <ButtonGrayscale onClick={this.grayscaleHandler}>grayscale</ButtonGrayscale >
-                <ButtonNormal onClick={this.normalHandler}>normal</ButtonNormal>
+                {
+                    this.state.grayscale ? <ButtonGrayscaleActive onClick={this.grayscaleHandler}>greyscale</ButtonGrayscaleActive> : <ButtonGrayscale onClick={this.grayscaleHandler}>greyscale</ButtonGrayscale>
+                }
+                {
+                    this.state.normal ? <ButtonNormalActive onClick={this.normalHandler}>normal</ButtonNormalActive> : <ButtonNormal onClick={this.normalHandler}>normal</ButtonNormal>
+                }
                 <BlurHeader>Select blur strength :</BlurHeader>
-                <Select>
-                    <option value="0" selected onClick={this.blurEffectHandler}>0</option>
-                    <option value="1" onClick={this.blurEffectHandler}>1</option>
-                    <option value="2" onClick={this.blurEffectHandler}>2</option>
-                    <option value="3" onClick={this.blurEffectHandler}>3</option>
-                    <option value="4" onClick={this.blurEffectHandler}>4</option>
-                    <option value="5" onClick={this.blurEffectHandler}>5</option>
-                    <option value="6" onClick={this.blurEffectHandler}>6</option>
-                    <option value="7" onClick={this.blurEffectHandler}>7</option>
-                    <option value="8" onClick={this.blurEffectHandler}>8</option>
-                    <option value="9" onClick={this.blurEffectHandler}>9</option>
-                    <option value="10" onClick={this.blurEffectHandler}>10</option>
-                </Select>
+                <Slider type="range" min="0" max="10" defaultValue="0" onClick={this.blurEffectHandler}></Slider>
                 </Nav>
                 <ContainerDiv>
                     {
