@@ -1,6 +1,7 @@
 import styled, {keyframes} from 'styled-components'
 import React from 'react'
 
+//Declaration of elements and their styles using styled components
 const ContainerDiv = styled.div`
     overflow-y: scroll;
     background: linear-gradient(80deg, green, darkolivegreen, teal);
@@ -29,8 +30,9 @@ const Nav = styled.div`
     padding-bottom: 0%;
     border-bottom: 1px solid green;
 `
+
 const ButtonGrayscale = styled.button`
-    width: 10%;
+    width: 12%;
     display: inline;
     background-color: black;
     -webkit-backface-visibility:hidden;
@@ -92,13 +94,13 @@ const Loader = styled.div`
     margin-left:-15%
 `
 
+/*Declaration of main class*/
 class Container extends React.Component{
     constructor(){
         super()
-        let grayscale = "";
-        //let blurValue = 0
+        /*Declaring state to store my all data relevant to app*/
         this.state = {
-            apiUrl:`https://picsum.photos/500/500${grayscale}`,
+            apiUrl:`https://picsum.photos/500/500`,
             imgArray:[], 
             scrollEventCounter: 0,
             grayscale: false,
@@ -108,7 +110,9 @@ class Container extends React.Component{
             }
 
         window.onscroll = function(){scrollHandler()}
-        
+        /*Declaration of event handler that will provide information about
+        height of clients scroll progress. When certain point is reached the program calls the
+        asynchronious function for fetching set of new pictures and storing it in state.*/
         const scrollHandler =()=>{
             if( window.scrollY >= document.body.clientHeight - 1000 && this.state.scrollEventCounter < 1){
                 this.state.scrollEventCounter ++
@@ -124,7 +128,8 @@ class Container extends React.Component{
             }
         }     
     }
-
+    /*Simple function with loop and fetch method. The need of Development of this function
+    came from many repeatitions of same code.*/
     helperFunction = (api) => {
         this.setState({apiUrl:api})
         for(let i = 0; i < 10; i++){
@@ -134,7 +139,7 @@ class Container extends React.Component{
             })
         }
     }
-
+    /*Slightly modified function from above.*/
     helperFunctionforBlur = (api)=>{
         this.setState({loading: true})
         this.setState({apiUrl:api})
@@ -148,7 +153,7 @@ class Container extends React.Component{
             })
         }
     }
-
+    /*Event handler for grayscale mode.*/
     grayscaleHandler = () => {
         this.setState({grayscale: !this.state.grayscale})
         this.setState({normal: false})
@@ -159,7 +164,7 @@ class Container extends React.Component{
             this.helperFunction(`https://picsum.photos/500/500?grayscale`)
         }
     }
-
+    /*Event handler for normal mode.*/
     normalHandler = (e) => {
         if(e){
             e.preventDefault()
@@ -173,11 +178,14 @@ class Container extends React.Component{
             this.helperFunction(`https://picsum.photos/500/500`)
         }
     }
-
+    /*Event handler for blur effect.*/
     blurEffectHandler = (e) => {
         const targetValue = e.target.value
         this.setState({blurValue: targetValue})
-        if(targetValue === "0"){
+        if(targetValue === "0" && this.state.grayscale){
+            this.setState({imgArray: []})
+            this.helperFunctionforBlur(`https://picsum.photos/500/500?grayscale`)
+        } else if(targetValue === "0"){
             this.setState({imgArray: []})
             this.helperFunctionforBlur(`https://picsum.photos/500/500`)
         } else if(this.state.grayscale){
@@ -190,6 +198,7 @@ class Container extends React.Component{
     }
 
     componentDidMount(){
+        /*Loading first set of pictures when component gets mounted*/
         for(let i = 0; i< 10; i++ ){
         const ApiUrl = this.state.apiUrl
         fetch(ApiUrl)
@@ -212,6 +221,7 @@ class Container extends React.Component{
                 {
                     this.state.normal ? <ButtonNormalActive onClick={this.normalHandler}>normal</ButtonNormalActive> : <ButtonNormal onClick={this.normalHandler}>normal</ButtonNormal>
                 }
+                
             <BlurHeader>Select blur strength : {this.state.blurValue}</BlurHeader>
             {
                 this.state.loading ? <Loader></Loader>: <Slider type="range" min="0" max="10" defaultValue={this.state.blurValue} onClick={this.blurEffectHandler}></Slider>
