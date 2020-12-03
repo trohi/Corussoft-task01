@@ -1,9 +1,10 @@
-import styled from 'styled-components'
+import styled, {keyframes} from 'styled-components'
 import React from 'react'
 
 const ContainerDiv = styled.div`
     overflow-y: scroll;
-    background: linear-gradient(80deg, green, darkolivegreen, teal)
+    background: linear-gradient(80deg, green, darkolivegreen, teal);
+    min-height: 100vh
 `
 
 const Img = styled.img`
@@ -42,7 +43,6 @@ const ButtonGrayscale = styled.button`
 
     &:hover{
       text-transform: uppercase;
-      width: 11%
     }
 `
 const ButtonGrayscaleActive = styled(ButtonGrayscale)`
@@ -70,6 +70,24 @@ const Slider = styled.input`
     height:6px;
     cursor:pointer
 `
+const Spin = keyframes`
+    0%{ transform : rotate:(0deg)}
+    100%{ transform : rotate(360deg)}
+`
+
+const Loader = styled.div`
+    position: relative;
+    border: 10px solid #f3f3f3;
+    border-top: 10px solid green; 
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: ${Spin} 2s linear infinite;
+    float:right;
+    margin-top:-0.5%;
+    margin-right:28%;
+    margin-left:-15%
+`
 
 class Container extends React.Component{
     constructor(){
@@ -82,7 +100,8 @@ class Container extends React.Component{
             scrollEventCounter: 0,
             grayscale: false,
             normal:true,
-            blurValue: "0"
+            blurValue: "0",
+            loading: false
             }
 
         window.onscroll = function(){scrollHandler()}
@@ -90,7 +109,7 @@ class Container extends React.Component{
         const scrollHandler =()=>{
             if( window.scrollY >= document.body.clientHeight - 1000 && this.state.scrollEventCounter < 1){
                 this.state.scrollEventCounter ++
-                for(let i = 0; i< 5; i++ ){
+                for(let i = 0; i< 10; i++ ){
                     const ApiUrl = this.state.apiUrl
                     fetch(ApiUrl)
                     .then((response) => {
@@ -104,10 +123,14 @@ class Container extends React.Component{
     }
 
     helperFunction = (api) => {
+        this.setState({loading: true})
         this.setState({apiUrl:api})
-        for(let i =0; i < this.state.imgArray.length; i++){
+        for(let i = 0; i < 10; i++){
             fetch(api)
             .then((response)=>{
+                 if(i >= 9){
+                    this.setState({loading: false})
+                } 
                 this.setState({imgArray: [...this.state.imgArray, response.url]})
             })
         }
@@ -125,7 +148,9 @@ class Container extends React.Component{
     }
 
     normalHandler = (e) => {
-        e.preventDefault()
+        if(e){
+            e.preventDefault()
+        }
         this.setState({normal: true})
         this.setState({grayscale: false})
         this.setState({imgArray:[]})
@@ -137,23 +162,25 @@ class Container extends React.Component{
     }
 
     blurEffectHandler = (e) => {
-        e.preventDefault()
-        console.log(e.target.value)
+        /* e.preventDefault()
+        console.log(e.target.value) */
         const targetValue = e.target.value
         this.setState({blurValue: targetValue})
         if(targetValue === "0"){
-            this.normalHandler()
+            this.setState({imgArray: []})
+            /*this.normalHandler()*/
+            this.helperFunction(`https://picsum.photos/500/500`)
         } else if(this.state.grayscale){
-            this.setState({imgArray:[]})
+            this.setState({imgArray: []})
             this.helperFunction(`https://picsum.photos/500/500?grayscale&blur=${targetValue}`)
         } else {
-            this.setState({imgArray:[]})
+            this.setState({imgArray: []})
             this.helperFunction(`https://picsum.photos/500/500?blur=${targetValue}`)
         }
     }
 
     componentDidMount(){
-        for(let i = 0; i< 15; i++ ){
+        for(let i = 0; i< 10; i++ ){
         const ApiUrl = this.state.apiUrl
         fetch(ApiUrl)
         .then((response) => {
@@ -176,7 +203,10 @@ class Container extends React.Component{
                     this.state.normal ? <ButtonNormalActive onClick={this.normalHandler}>normal</ButtonNormalActive> : <ButtonNormal onClick={this.normalHandler}>normal</ButtonNormal>
                 }
             <BlurHeader>Select blur strength : {this.state.blurValue}</BlurHeader>
-                <Slider type="range" min="0" max="10" defaultValue="0" onChange={this.blurEffectHandler}></Slider>
+            {
+                this.state.loading ? <Loader></Loader>: <Slider type="range" min="0" max="10" defaultValue={this.state.blurValue} onClick={this.blurEffectHandler}></Slider>
+            }
+                
                 </Nav>
                 <ContainerDiv>
                     {
