@@ -25,7 +25,7 @@ const Nav = styled.div`
     width: 100%;
     height: 60px;
     padding-top: 2%;
-    padding-bottom: 2%;
+    padding-bottom: 0%;
     border-bottom: 1px solid green;
 `
 const ButtonGrayscale = styled.button`
@@ -76,7 +76,7 @@ class Container extends React.Component{
         let grayscale = "";
         //let blurValue = 0
         this.state = {
-            apiUrl:`https://picsum.photos/400/400${grayscale}`,
+            apiUrl:`https://picsum.photos/500/500${grayscale}`,
             imgArray:[], 
             scrollEventCounter: 0,
             grayscale: false,
@@ -117,9 +117,9 @@ class Container extends React.Component{
         this.setState({normal: false})
         this.setState({imgArray:[]})
         if(this.state.blurValue !== "0"){
-            this.helperFunction(`https://picsum.photos/400/400?grayscale&blur=${this.state.blurValue}`)
+            this.helperFunction(`https://picsum.photos/500/500?grayscale&blur=${this.state.blurValue}`)
         } else {
-            this.helperFunction(`https://picsum.photos/400/400?grayscale`)
+            this.helperFunction(`https://picsum.photos/500/500?grayscale`)
         }
     }
 
@@ -128,9 +128,9 @@ class Container extends React.Component{
         this.setState({grayscale: false})
         this.setState({imgArray:[]})
         if(this.state.blurValue !== "0"){
-            this.helperFunction(`https://picsum.photos/400/400?blur=${this.state.blurValue}`)
+            this.helperFunction(`https://picsum.photos/500/500?blur=${this.state.blurValue}`)
         } else {
-            this.helperFunction(`https://picsum.photos/400/400`)
+            this.helperFunction(`https://picsum.photos/500/500`)
         }
     }
 
@@ -142,12 +142,12 @@ class Container extends React.Component{
             this.normalHandler()
         } else if(this.state.grayscale){
             this.setState({imgArray:[]})
-            this.helperFunction(`https://picsum.photos/400/400?grayscale&blur=${targetValue}`)
+            this.helperFunction(`https://picsum.photos/500/500?grayscale&blur=${targetValue}`)
         } else {
             this.setState({imgArray:[]})
-            this.helperFunction(`https://picsum.photos/400/400?blur=${targetValue}`)
+            this.helperFunction(`https://picsum.photos/500/500?blur=${targetValue}`)
+        }
     }
-}
 
     componentDidMount(){
         for(let i = 0; i< 15; i++ ){
@@ -183,7 +183,7 @@ class Container extends React.Component{
                     }
                 </ContainerDiv>
             </div>
-        )
-    }
-}                                                                                                                                                                                                                                                                                                                                
+            )
+        }
+    }                                                                                                                                                                                                                                                                                                                                
 export default Container
