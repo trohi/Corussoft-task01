@@ -2,9 +2,8 @@ import styled from 'styled-components'
 import React from 'react'
 
 const ContainerDiv = styled.div`
-    /*height: 82.5vh; */
     overflow-y: scroll;
-    background: linear-gradient(60deg, green, darkolivegreen, teal)
+    background: linear-gradient(80deg, green, darkolivegreen, teal)
 `
 
 const Img = styled.img`
@@ -19,13 +18,40 @@ const Img = styled.img`
     padding-right: 25px
 `
 
-/* window.onscroll = function(){myfunction()}
+const Nav = styled.div`
+  font-size: 1rem;
+  background-color: black;
+  width: 100%;
+  height: 60px;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  border-bottom: 1px solid green;
+`
+const ButtonGrayscale = styled.button`
+  width: 10%;
+  display: inline;
+  background-color: black;
+  border: 2px solid green;
+  height: 40px;
+  border-radius: 20px;
+  color: grey;
+  line-height: 35px;
+  cursor: pointer;
 
-const myfunction =()=>{
-    if( window.scrollY >= document.body.clientHeight - 1000){
-        console.log("Vakat da se dohvate nove slike!")
-    }
-} */
+  &:hover{
+    text-transform: uppercase;
+    width: 11%
+  }
+`
+
+const ButtonNormal = styled(ButtonGrayscale)`
+  margin-left: 5%
+`
+const BlurHeader = styled.span`
+  color: green;
+  margin-left: 5%;
+  margin-right: 1%
+`
 
 class Container extends React.Component{
     constructor(){
@@ -35,17 +61,17 @@ class Container extends React.Component{
         this.state = {
             apiUrl:`https://picsum.photos/400/400${grayscale}`,
             imgArray:[], 
-            scrollEventCounter: 0
+            scrollEventCounter: 0,
+            loading:false
             }
 
-            window.onscroll = function(){myfunction()}
+            window.onscroll = function(){scrollHandler()}
         
-
-        const myfunction =()=>{
+        const scrollHandler =()=>{
             if( window.scrollY >= document.body.clientHeight - 1000 && this.state.scrollEventCounter < 1){
                 console.log("Vakat da se dohvate nove slike!")
                 this.state.scrollEventCounter ++
-                for(let i = 0; i< 15; i++ ){
+                for(let i = 0; i< 5; i++ ){
                     const ApiUrl = this.state.apiUrl
                     fetch(ApiUrl)
                     .then((response) => {
@@ -57,17 +83,33 @@ class Container extends React.Component{
                     })
                 }
             }
-        }
-
-        /*
-       const grayScaleHandler = () => {
-            grayscale = '?grayscale'
-        }
-        */
+        }     
     }
 
-    componentDidMount(){
+    grayscaleHandler = () => {
+        this.setState({apiUrl:"https://picsum.photos/400/400?grayscale"})
+        this.setState({imgArray:[]})
+        for(let i = 0; i < this.state.imgArray.length; i++){
+            fetch(`https://picsum.photos/400/400?grayscale`)
+            .then((response)=>{
+                this.setState({imgArray:[...this.state.imgArray, response.url]})
+            })
+        }
+    }
 
+    normalHandler = () => {
+        this.setState({apiUrl:"https://picsum.photos/400/400"})
+        this.setState({imgArray:[]})
+        for(let i = 0; i < this.state.imgArray.length; i++){
+            fetch(`https://picsum.photos/400/400`)
+            .then((response)=>{
+                this.setState({imgArray:[...this.state.imgArray, response.url]})
+            })
+        }
+    }
+
+
+    componentDidMount(){
         for(let i = 0; i< 15; i++ ){
         const ApiUrl = this.state.apiUrl
         fetch(ApiUrl)
@@ -80,21 +122,36 @@ class Container extends React.Component{
      }
     }
 
-     myFunction=(e)=>{
-        console.log(window.scrollY)
-    }
-
-
 
     render(){
         return(
-            <ContainerDiv onScroll={this.myFunction}>
-                {
-                    this.state.imgArray.map((url, index)=>{
-                        return <Img src={url} key={index} alt={'img'+index}></Img>
-                    })
-                }
-            </ContainerDiv>
+            <div>
+                <Nav>
+                <ButtonGrayscale onClick={this.grayscaleHandler}>grayscale</ButtonGrayscale >
+                <ButtonNormal onClick={this.normalHandler}>normal</ButtonNormal>
+                <BlurHeader>Select blur strength :</BlurHeader>
+                <select>
+                    <option value="0" disabled selected>0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+                </Nav>
+                <ContainerDiv>
+                    {
+                        this.state.imgArray.map((url, index)=>{
+                            return <Img src={url} key={index} alt={'img'+index}></Img>
+                        })
+                    }
+                </ContainerDiv>
+            </div>
         )
     }
 }                                                                                                                                                                                                                                                                                                                                
