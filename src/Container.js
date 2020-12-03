@@ -19,48 +19,48 @@ const Img = styled.img`
 `
 
 const Nav = styled.div`
-  position: fixed;
-  font-size: 1rem;
-  background-color: black;
-  width: 100%;
-  height: 60px;
-  padding-top: 2%;
-  padding-bottom: 2%;
-  border-bottom: 1px solid green;
+    position: fixed;
+    font-size: 1rem;
+    background-color: black;
+    width: 100%;
+    height: 60px;
+    padding-top: 2%;
+    padding-bottom: 2%;
+    border-bottom: 1px solid green;
 `
 const ButtonGrayscale = styled.button`
-  width: 10%;
-  display: inline;
-  background-color: black;
-  border: 2px solid green;
-  height: 40px;
-  border-radius: 20px;
-  color: grey;
-  line-height: 35px;
-  cursor: pointer;
+    width: 10%;
+    display: inline;
+    background-color: black;
+    border: 2px solid green;
+    height: 40px;
+    border-radius: 20px;
+    color: grey;
+    line-height: 35px;
+    cursor: pointer;
 
-  &:hover{
-    text-transform: uppercase;
-    width: 11%
-  }
+    &:hover{
+      text-transform: uppercase;
+      width: 11%
+    }
 `
 const ButtonGrayscaleActive = styled(ButtonGrayscale)`
-  background-color: green;
-  color: black
+    background-color: green;
+    color: black
 `
 
 const ButtonNormal = styled(ButtonGrayscale)`
-  margin-left: 5%
+    margin-left: 5%
 `
 const ButtonNormalActive = styled(ButtonNormal)`
-  background-color: green;
-  color: black
+    background-color: green;
+    color: black
 `
 
 const BlurHeader = styled.span`
-  color: green;
-  margin-left: 5%;
-  margin-right: 1%
+    color: green;
+    margin-left: 5%;
+    margin-right: 1%
 `
 
 const Slider = styled.input`
@@ -80,24 +80,22 @@ class Container extends React.Component{
             imgArray:[], 
             scrollEventCounter: 0,
             grayscale: false,
-            normal:true
+            normal:true,
+            blurValue: "0"
             }
 
-            window.onscroll = function(){scrollHandler()}
+        window.onscroll = function(){scrollHandler()}
         
         const scrollHandler =()=>{
             if( window.scrollY >= document.body.clientHeight - 1000 && this.state.scrollEventCounter < 1){
-                console.log("Vakat da se dohvate nove slike!")
                 this.state.scrollEventCounter ++
                 for(let i = 0; i< 5; i++ ){
                     const ApiUrl = this.state.apiUrl
                     fetch(ApiUrl)
                     .then((response) => {
-                    //console.log(response.url)
                     this.setState({imgUrl: response.url})
                     this.setState({imgArray:[...this.state.imgArray, response.url] })
                     this.state.scrollEventCounter = 0
-                    //console.log(this.state.imgArray[0])
                     })
                 }
             }
@@ -107,65 +105,49 @@ class Container extends React.Component{
     helperFunction = (api) => {
         this.setState({apiUrl:api})
         for(let i =0; i < this.state.imgArray.length; i++){
-                fetch(api)
-                .then((response)=>{
-                    this.setState({imgArray: [...this.state.imgArray, response.url]})
-                })
-            }
-    }
-
-    grayscaleHandler = () => {
-        this.setState({apiUrl:"https://picsum.photos/400/400?grayscale"})
-        this.setState({grayscale: !this.state.grayscale})
-        this.setState({normal: false})
-        this.setState({imgArray:[]})
-        for(let i = 0; i < this.state.imgArray.length; i++){
-            fetch(`https://picsum.photos/400/400?grayscale`)
+            fetch(api)
             .then((response)=>{
-                this.setState({imgArray:[...this.state.imgArray, response.url]})
+                this.setState({imgArray: [...this.state.imgArray, response.url]})
             })
         }
     }
 
+    grayscaleHandler = () => {
+        this.setState({grayscale: !this.state.grayscale})
+        this.setState({normal: false})
+        this.setState({imgArray:[]})
+        if(this.state.blurValue !== "0"){
+            this.helperFunction(`https://picsum.photos/400/400?grayscale&blur=${this.state.blurValue}`)
+        } else {
+            this.helperFunction(`https://picsum.photos/400/400?grayscale`)
+        }
+    }
+
     normalHandler = () => {
-        this.setState({apiUrl:"https://picsum.photos/400/400"})
         this.setState({normal: true})
         this.setState({grayscale: false})
         this.setState({imgArray:[]})
-        for(let i = 0; i < this.state.imgArray.length; i++){
-            fetch(`https://picsum.photos/400/400`)
-            .then((response)=>{
-                this.setState({imgArray:[...this.state.imgArray, response.url]})
-            })
+        if(this.state.blurValue !== "0"){
+            this.helperFunction(`https://picsum.photos/400/400?blur=${this.state.blurValue}`)
+        } else {
+            this.helperFunction(`https://picsum.photos/400/400`)
         }
     }
 
     blurEffectHandler = (e) => {
         console.log(e.target.value)
-        const blurValue = e.target.value
-        if(blurValue === "0"){
+        const targetValue = e.target.value
+        this.setState({blurValue: targetValue})
+        if(targetValue === "0"){
             this.normalHandler()
         } else if(this.state.grayscale){
-            this.setState({apiUrl:`https://picsum.photos/400/400?grayscale&blur=${blurValue}`})
             this.setState({imgArray:[]})
-            for(let i =0; i < this.state.imgArray.length; i++){
-                fetch(`https://picsum.photos/400/400?grayscale&blur=${blurValue}`)
-                .then((response)=>{
-                    this.setState({imgArray: [...this.state.imgArray, response.url]})
-                })
-            }
+            this.helperFunction(`https://picsum.photos/400/400?grayscale&blur=${targetValue}`)
         } else {
-            this.setState({apiUrl:`https://picsum.photos/400/400?blur=${blurValue}`})
             this.setState({imgArray:[]})
-            for(let i =0; i < this.state.imgArray.length; i++){
-                fetch(`https://picsum.photos/400/400?blur=${blurValue}`)
-                .then((response)=>{
-                    this.setState({imgArray: [...this.state.imgArray, response.url]})
-                })
-        }
+            this.helperFunction(`https://picsum.photos/400/400?blur=${targetValue}`)
     }
 }
-
 
     componentDidMount(){
         for(let i = 0; i< 15; i++ ){
@@ -190,8 +172,8 @@ class Container extends React.Component{
                 {
                     this.state.normal ? <ButtonNormalActive onClick={this.normalHandler}>normal</ButtonNormalActive> : <ButtonNormal onClick={this.normalHandler}>normal</ButtonNormal>
                 }
-                <BlurHeader>Select blur strength :</BlurHeader>
-                <Slider type="range" min="0" max="10" defaultValue="0" onClick={this.blurEffectHandler}></Slider>
+            <BlurHeader>Select blur strength : {this.state.blurValue}</BlurHeader>
+                <Slider type="range" min="0" max="10" defaultValue="0" onChange={this.blurEffectHandler}></Slider>
                 </Nav>
                 <ContainerDiv>
                     {
