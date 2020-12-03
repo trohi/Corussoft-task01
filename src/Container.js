@@ -33,6 +33,9 @@ const ButtonGrayscale = styled.button`
     width: 10%;
     display: inline;
     background-color: black;
+    -webkit-backface-visibility:hidden;
+    -webkit-border-before: 2px solid green;
+    -webkit-border-radius: 20px;
     border: 2px solid green;
     height: 40px;
     border-radius: 20px;
@@ -123,6 +126,16 @@ class Container extends React.Component{
     }
 
     helperFunction = (api) => {
+        this.setState({apiUrl:api})
+        for(let i = 0; i < 10; i++){
+            fetch(api)
+            .then((response)=>{
+                this.setState({imgArray: [...this.state.imgArray, response.url]})
+            })
+        }
+    }
+
+    helperFunctionforBlur = (api)=>{
         this.setState({loading: true})
         this.setState({apiUrl:api})
         for(let i = 0; i < 10; i++){
@@ -162,20 +175,17 @@ class Container extends React.Component{
     }
 
     blurEffectHandler = (e) => {
-        /* e.preventDefault()
-        console.log(e.target.value) */
         const targetValue = e.target.value
         this.setState({blurValue: targetValue})
         if(targetValue === "0"){
             this.setState({imgArray: []})
-            /*this.normalHandler()*/
-            this.helperFunction(`https://picsum.photos/500/500`)
+            this.helperFunctionforBlur(`https://picsum.photos/500/500`)
         } else if(this.state.grayscale){
             this.setState({imgArray: []})
-            this.helperFunction(`https://picsum.photos/500/500?grayscale&blur=${targetValue}`)
+            this.helperFunctionforBlur(`https://picsum.photos/500/500?grayscale&blur=${targetValue}`)
         } else {
             this.setState({imgArray: []})
-            this.helperFunction(`https://picsum.photos/500/500?blur=${targetValue}`)
+            this.helperFunctionforBlur(`https://picsum.photos/500/500?blur=${targetValue}`)
         }
     }
 
